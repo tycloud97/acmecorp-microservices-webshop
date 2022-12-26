@@ -1,3 +1,5 @@
+require('source-map-support').install();
+
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import nodemailer from 'nodemailer';
 

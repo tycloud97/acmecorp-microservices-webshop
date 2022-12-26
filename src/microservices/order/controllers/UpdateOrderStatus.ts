@@ -1,3 +1,5 @@
+require('source-map-support').install();
+
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 
 import Log from '@dazn/lambda-powertools-logger';
@@ -16,6 +18,7 @@ import wrap from '@dazn/lambda-powertools-pattern-basic';
 import { withMiddlewares } from '../../../common/Tracing/middleware';
 
 export const UpdateOrderStatus = wrap(withMiddlewares(UpdateOrderStatusHandler))
+const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
 
 /**
  * @description Update order status
@@ -38,9 +41,12 @@ export async function UpdateOrderStatusHandler(
       query: `mutation {\n  updateOrderStatus(id: ${orderId}, status: ${status}) {\n    orderId\n  }\n}`
     };
 
+    const correlationId = CorrelationIds.get();
+    
     await fetch(ENDPOINT, {
       method: 'POST',
       headers: {
+        'x-correlation-id': correlationId?.['x-correlation-id'],
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(body)

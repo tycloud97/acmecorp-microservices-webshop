@@ -1,3 +1,5 @@
+require('source-map-support').install();
+
 import { APIGatewayProxyEvent, Context, APIGatewayProxyResult } from 'aws-lambda';
 import fetch from 'node-fetch';
 
@@ -8,6 +10,7 @@ import wrap from '@dazn/lambda-powertools-pattern-basic'
 
 const DATABASE_API_ENDPOINT = process.env.DATABASE_API_ENDPOINT;
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;
+const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
 
 export const BookDelivery = wrap(withMiddlewares(BookDeliveryHandler))
 
@@ -56,8 +59,14 @@ export async function BookDeliveryHandler(
    * more of a "core" service than the Email service is, and such logic can be considered "privileged". An Email service should not have
    * any such privileges.
    */
+  const correlationId = CorrelationIds.get();
+
   const data = await fetch(DATABASE_API_ENDPOINT, {
     method: 'POST',
+    headers: {
+      'x-correlation-id': correlationId?.['x-correlation-id'],
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify({
       query: `query {
         getOrder(id: ${orderId}) {
@@ -81,6 +90,10 @@ export async function BookDeliveryHandler(
    */
   await fetch(DATABASE_API_ENDPOINT, {
     method: 'POST',
+    headers: {
+      'x-correlation-id': correlationId?.['x-correlation-id'],
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify({
       query: `mutation {
         addDeliveryDataToOrder(deliveryData: {orderId: ${orderId}, deliveryTime: "${deliveryTime}"})
@@ -116,7 +129,7 @@ export async function BookDeliveryHandler(
   /**
    * Emit event so our other services can use the information
    */
-  await emitEvent('DeliveryBooked', booking);
+  await emitEvent('DeliveryBooked', { booking, correlationId: correlationId?.['x-correlation-id'] });
 
   return {
     statusCode: 200,

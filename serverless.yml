@@ -4,17 +4,22 @@ provider:
   name: aws
   runtime: nodejs14.x
   frameworkVersion: "2"
+  lambdaHashingVersion: 20201221
   stackTags:
     Usage: microservicesdemo
   tags:
     Usage: microservicesdemo
-  tracing:
-    apiGateway: true
-    lambda: true
+  # tracing:
+    # apiGateway: true
+    # lambda: true
   apiGateway:
     minimumCompressionSize: 1024
   region: ${opt:region, "us-east-1"}
   endpointType: EDGE
+  environment:
+    # From Node 12.x this option is available,
+    # so support-source-maps package is not needed
+    NODE_OPTIONS: "--enable-source-maps"
   memorySize: 1024
   timeout: 15
   logRetentionInDays: 7
@@ -27,6 +32,11 @@ provider:
       - xray:PutTelemetryRecords
       - xray:PutTraceSegments
     Resource: "*"
+  logs:
+    restApi:
+      accessLogging: true
+      format: '{"requestTime":"$context.requestTime","requestId":"$context.requestId","httpMethod":"$context.httpMethod","path":"$context.path","resourcePath":"$context.resourcePath","status":$context.status,"responseLatency":$context.responseLatency}'
+      executionLogging: false # Turn off execution logs b/c they're too noisy.
 
 custom:
   allowedOrigin: "*" # Ideally don't use this; scope down to your actual domain
@@ -41,22 +51,28 @@ custom:
       databaseApiEndpoint: https://0zfhtxcuu2.execute-api.us-east-1.amazonaws.com/dev/database
       tableName: Orders
     arns:
-      auroraCluster: arn:aws:rds:us-east-1:827539266883:cluster:microservicesdemo1
+      auroraCluster: arn:aws:rds:us-east-1:827539266883:cluster:microservicesdemo1-cluster
       auroraSecretValue: arn:aws:secretsmanager:us-east-1:827539266883:secret:microservicesdemo1-XlticR
       customEventbridgeBus: arn:aws:events:${self:provider.region}:${self:custom.aws.awsAccountId}:event-bus/${self:custom.aws.database.databaseName}
   nodemailer: # Pre-create these at https://ethereal.email/create
     user: abdullah74@ethereal.email
     password: K1YfZtu4vFjYUe1VQh
-  webpack:
-    webpackConfig: 'webpack.config.js'
-    includeModules: true
-    packager: 'npm'
-    excludeFiles: src/**/*.test.js
+  # webpack:
+  #   webpackConfig: 'webpack.config.js'
+  #   includeModules: true
+  #   packager: 'npm'
+  #   excludeFiles: src/**/*.test.js
+  esbuild:
+    bundle: true
+    minify: true
+    sourcemap: true
 
 plugins:
   - serverless-offline
-  - serverless-webpack
+  # - serverless-webpack
   - serverless-iam-roles-per-function
+  - serverless-esbuild
+
 
 package:
   individually: false

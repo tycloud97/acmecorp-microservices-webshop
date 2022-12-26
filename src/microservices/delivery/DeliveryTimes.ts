@@ -1,3 +1,5 @@
+require('source-map-support').install();
+
 import Log from '@dazn/lambda-powertools-logger';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { withMiddlewares } from '../../common/Tracing/middleware';

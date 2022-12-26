@@ -1,4 +1,4 @@
-require('source-map-support/register');
+require('source-map-support').install();
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import wrap from '@dazn/lambda-powertools-pattern-basic'
@@ -119,8 +119,9 @@ export async function CreateOrderHandler(
 
     const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
     const correlationId = CorrelationIds.get();
+    Log.info('correlationId', correlationId)
 
-    await emitEvent('OrderCreated', {...order.getRequiredOrderPlacementData(), correlationId: correlationId });
+    await emitEvent('OrderCreated', { ...order.getRequiredOrderPlacementData(), correlationId: correlationId?.['x-correlation-id'] });
 
     /**
      * Frontend gets back an OK status code and a redirect URL so the customer is informed it's all A-OK

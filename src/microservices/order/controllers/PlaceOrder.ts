@@ -1,4 +1,4 @@
-require('source-map-support/register');
+require('source-map-support').install();
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 

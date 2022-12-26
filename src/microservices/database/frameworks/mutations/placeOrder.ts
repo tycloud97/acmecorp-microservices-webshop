@@ -1,6 +1,8 @@
 import { makeNewOrderDatabase } from '../../entities/OrderDatabase';
 
 import { emitEvent } from '../../../../common/EmitEvent/EmitEvent';
+const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
+import Log from '@dazn/lambda-powertools-logger';
 
 export const placeOrder = async (
   name: string,
@@ -31,7 +33,12 @@ export const placeOrder = async (
     testId
   );
 
-  await emitEvent('OrderPlaced', data);
+
+  const correlationId = CorrelationIds.get();
+
+  Log.info('placeOrder correlationId', correlationId)
+
+  await emitEvent('OrderPlaced', { ...data, correlationId: correlationId?.['x-correlation-id'] });
 
   return data.orderId;
 };

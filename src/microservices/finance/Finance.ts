@@ -1,6 +1,8 @@
+require('source-map-support').install();
+
 import { APIGatewayProxyEvent, Context, APIGatewayProxyResult } from 'aws-lambda';
 
-type OrderCreated = {
+type OrderPlaced = {
   orderId: number;
   products: string;
   totalPrice: number;
@@ -18,10 +20,11 @@ export async function FinanceHandler(
   event: APIGatewayProxyEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> {
+  Log.info('event', event)
   const eventBody = event.body ? JSON.parse(event.body) : event;
 
-  if (eventBody['detail-type'] === 'OrderCreated') {
-    const orderEvent: OrderCreated = eventBody.detail;
+  if (eventBody['detail-type'] === 'OrderPlaced') {
+    const orderEvent: OrderPlaced = eventBody.detail;
     const priceInDollars: number = orderEvent.totalPrice / 100;
     const message = `Adding order ID "${orderEvent.orderId}" and $${priceInDollars} to the books!`;
     Log.info(message);
