@@ -2,18 +2,24 @@ import { APIGatewayProxyEvent, Context, APIGatewayProxyResult } from 'aws-lambda
 import fetch from 'node-fetch';
 
 import { emitEvent } from '../../common/EmitEvent/EmitEvent';
+import Log from '@dazn/lambda-powertools-logger';
+import { withMiddlewares } from '../../common/Tracing/middleware';
+import wrap from '@dazn/lambda-powertools-pattern-basic'
 
 const DATABASE_API_ENDPOINT = process.env.DATABASE_API_ENDPOINT;
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;
 
+export const BookDelivery = wrap(withMiddlewares(BookDeliveryHandler))
+
 /**
  * @description This is a canned mock of what a delivery provider might send back when you request to book a delivery timeslot.
  */
-export async function BookDelivery(
+export async function BookDeliveryHandler(
   event: APIGatewayProxyEvent,
   context: Context
-): Promise<APIGatewayProxyResult | void> {
+): Promise<APIGatewayProxyResult> {
   // Handle CORS
+  Log.info('event', event)
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
@@ -30,7 +36,7 @@ export async function BookDelivery(
   const { orderId, deliveryTime } = eventBody;
 
   if (!orderId || !deliveryTime) {
-    console.error('Missing orderId or deliveryTime!');
+    Log.error('Missing orderId or deliveryTime!');
     return {
       statusCode: 400,
       headers: {
@@ -66,7 +72,7 @@ export async function BookDelivery(
   })
     .then((res) => res.json())
     .then((res) => res.data.getOrder)
-    .catch((error) => console.error(error));
+    .catch((error) => Log.error(error));
 
   if (!data) throw new Error('No data received!');
 
@@ -85,11 +91,11 @@ export async function BookDelivery(
     .then((res) => {
       if (!res.data.addDeliveryDataToOrder) {
         const message = 'Failed to update with delivery information!';
-        console.error(message);
+        Log.error(message);
         throw new Error(message);
       }
     })
-    .catch((error) => console.error(error));
+    .catch((error) => Log.error(error));
 
   // @ts-ignore
   const { customerName, customerEmail, customerPhone, customerStreet, customerCity } = data;

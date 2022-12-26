@@ -1,20 +1,31 @@
-import { APIGatewayProxyEvent, Context, APIGatewayProxyResult } from 'aws-lambda';
+require('source-map-support/register');
+
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 
 import fetch from 'node-fetch';
 
 const ENDPOINT = process.env.DATABASE_API_ENDPOINT;
 
+import Log from '@dazn/lambda-powertools-logger';
+import wrap from '@dazn/lambda-powertools-pattern-basic';
+import { withMiddlewares } from '../../../common/Tracing/middleware';
+const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
+
+export const PlaceOrder = wrap(withMiddlewares(PlaceOrderHandler))
+
 /**
  * @description Placing the order is done after any payment processing is complete.
  * The function is nothing more than a (public) security buffer that interacts with the ("internal") Database API.
  */
-export async function PlaceOrder(
+export async function PlaceOrderHandler(
   event: APIGatewayProxyEvent,
   context: Context
-): Promise<APIGatewayProxyResult | void> {
+): Promise<APIGatewayProxyResult> {
   try {
+    Log.info('event', event);
+
     const eventBody = event.body ? JSON.parse(event.body) : event;
-    console.log('eventBody', eventBody);
+    Log.info('eventBody', eventBody);
 
     /**
      * Use eventbody.detail if you are not doing any input transformation.
@@ -44,9 +55,12 @@ export async function PlaceOrder(
     `
     };
 
+    const correlationId = CorrelationIds.get();
+
     await fetch(ENDPOINT, {
       method: 'POST',
       headers: {
+        'x-correlation-id': correlationId?.['x-correlation-id'],
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(body)
@@ -57,7 +71,7 @@ export async function PlaceOrder(
       body: JSON.stringify('SUCCESS')
     } as APIGatewayProxyResult;
   } catch (error) {
-    console.error(error);
+    Log.error(error);
 
     return {
       statusCode: 400,

@@ -1,5 +1,6 @@
-import { APIGatewayProxyEvent, Context, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 
+import Log from '@dazn/lambda-powertools-logger';
 import fetch from 'node-fetch';
 
 const ENDPOINT = process.env.DATABASE_API_ENDPOINT;
@@ -11,13 +12,18 @@ enum Statuses {
   DELIVERY_BOOKED = 'DELIVERY_BOOKED'
 }
 
+import wrap from '@dazn/lambda-powertools-pattern-basic';
+import { withMiddlewares } from '../../../common/Tracing/middleware';
+
+export const UpdateOrderStatus = wrap(withMiddlewares(UpdateOrderStatusHandler))
+
 /**
  * @description Update order status
  */
-export async function UpdateOrderStatus(
+export async function UpdateOrderStatusHandler(
   event: APIGatewayProxyEvent,
   context: Context
-): Promise<APIGatewayProxyResult | void> {
+): Promise<APIGatewayProxyResult> {
   try {
     const eventBody = event.body ? JSON.parse(event.body) : event;
     const { orderId, transaction } = eventBody;
@@ -45,7 +51,7 @@ export async function UpdateOrderStatus(
       body: JSON.stringify('Ping from update order status')
     } as APIGatewayProxyResult;
   } catch (error) {
-    console.error(error);
+    Log.error(error);
     return {
       statusCode: 400,
       body: JSON.stringify(error)

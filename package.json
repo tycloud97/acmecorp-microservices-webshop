@@ -4,6 +4,7 @@
   "description": "Demonstration of a microservice architecture handling a webshop.",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "deploy": "sls deploy",
     "test": "node __tests__/system/index.js",
     "lint": "eslint './bin/**/*.ts' --quiet --fix",
@@ -30,7 +31,7 @@
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-prettier": "^3.3.1",
     "prettier": "^2.2.1",
-    "serverless-iam-roles-per-function": "^3.1.0",
+    "serverless-iam-roles-per-function": "^3.2.0",
     "serverless-offline": "^6.8.0",
     "serverless-plugin-typescript": "^1.1.9",
     "serverless-webpack": "^5.3.5",
@@ -44,9 +45,16 @@
     "@aws-sdk/client-dynamodb": "^3.4.1",
     "@aws-sdk/client-eventbridge": "^3.4.1",
     "@aws-sdk/client-rds-data": "^3.4.1",
-    "apollo-server-lambda": "^2.19.2",
+    "@dazn/lambda-powertools-correlation-ids": "^1.28.1",
+    "@dazn/lambda-powertools-logger": "^1.28.1",
+    "@dazn/lambda-powertools-pattern-basic": "^1.29.0",
+    "@middy/core": "^2.5.7",
+    "apollo-server-lambda": "^3.11.1",
+    "aws-xray-sdk": "^3.3.4",
     "faker": "^5.2.0",
+    "https": "^1.0.0",
     "node-fetch": "^2.6.1",
-    "nodemailer": "^6.4.17"
+    "nodemailer": "^6.4.17",
+    "source-map-support": "^0.5.21"
   }
 }

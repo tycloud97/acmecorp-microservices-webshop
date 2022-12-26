@@ -1,21 +1,28 @@
-import { APIGatewayProxyEvent, Context, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import nodemailer from 'nodemailer';
 
-import { createTransport } from './frameworks/nodemailer';
 import { createMessage } from './frameworks/messages';
+import { createTransport } from './frameworks/nodemailer';
 
 const NODEMAILER_USER = process.env.NODEMAILER_USER;
 const NODEMAILER_PASS = process.env.NODEMAILER_PASS;
 if (!NODEMAILER_USER || !NODEMAILER_USER)
   throw new Error('Missing Nodemailer user and/or password!');
+import Log from '@dazn/lambda-powertools-logger';
+
+import wrap from '@dazn/lambda-powertools-pattern-basic';
+import { withMiddlewares } from '../../common/Tracing/middleware';
+
+export const Email = wrap(withMiddlewares(EmailHandler))
 
 /**
  * @description Send email with Ethereal mail service
  */
-export async function Email(
+export async function EmailHandler(
   event: APIGatewayProxyEvent,
   context: Context
-): Promise<APIGatewayProxyResult | void> {
+): Promise<APIGatewayProxyResult> {
+  Log.info('event', event)
   const eventBody = event.body ? JSON.parse(event.body) : event;
   const transaction = eventBody.transaction;
 

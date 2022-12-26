@@ -1,5 +1,5 @@
 import { EventBridgeClient, PutEventsCommand } from '@aws-sdk/client-eventbridge';
-const eventBridge = new EventBridgeClient({ region: 'eu-north-1' });
+const eventBridge = new EventBridgeClient({ region: 'us-east-1' });
 
 import { events } from './events';
 

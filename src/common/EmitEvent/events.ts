@@ -15,6 +15,9 @@ export const events = {
     Source: 'microservicesdemo.order',
     DetailType: 'OrderCreated',
     Detail: JSON.stringify({
+      _context__: {
+        'x-correlation-id': data?.correlationId
+      },
       name: data.name,
       email: data.email,
       phone: data.phone,
@@ -36,6 +39,9 @@ export const events = {
     Source: 'microservicesdemo.order',
     DetailType: 'OrderPlaced',
     Detail: JSON.stringify({
+      _context__: {
+        'x-correlation-id': data?.correlationId
+      },
       orderId: data.orderId,
       products: data.products,
       name: data.name,
@@ -51,6 +57,9 @@ export const events = {
     Source: 'microservicesdemo.stock',
     DetailType: 'StockCreated',
     Detail: JSON.stringify({
+      _context__: {
+        'x-correlation-id': data?.correlationId
+      },
       orderId: data.orderId
     })
   }),
@@ -62,6 +71,9 @@ export const events = {
     Source: 'microservicesdemo.order',
     DetailType: 'OrderDeliverable',
     Detail: JSON.stringify({
+      _context__: {
+        'x-correlation-id': data?.correlationId
+      },
       orderId: data.orderId,
       name: data.name,
       email: data.email,
@@ -78,6 +90,9 @@ export const events = {
     Source: 'microservicesdemo.delivery',
     DetailType: 'DeliveryBooked',
     Detail: JSON.stringify({
+      _context__: {
+        'x-correlation-id': data?.correlationId
+      },
       orderId: data.orderId,
       name: data.name,
       email: data.email,

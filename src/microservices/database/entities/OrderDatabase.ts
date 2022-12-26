@@ -23,6 +23,8 @@ export const makeNewOrderDatabase = () => new OrderDatabase();
  * @see https://docs.aws.amazon.com/rdsdataservice/latest/APIReference/API_Operations.html
  * @see https://www.npmjs.com/package/@aws-sdk/client-rds-data
  */
+import Log from '@dazn/lambda-powertools-logger';
+
 class OrderDatabase {
   constructor() {
     if (!DB_NAME || !TABLE_NAME || !SECRET_ARN || !CLUSTER_ARN)
@@ -83,7 +85,7 @@ class OrderDatabase {
    * @description Helper to throw and log errors
    */
   private throwError(message: string) {
-    console.error(message);
+    Log.error(message);
     throw new Error(message);
   }
 
@@ -104,7 +106,7 @@ class OrderDatabase {
     testId: number
   ): Promise<any> {
     const id = Math.round(Math.random() * 10000000);
-    console.log(`Adding order "${id}" to the database...`);
+    Log.info(`Adding order "${id}" to the database...`);
 
     const response = await this.callDb(
       this.createParams(
@@ -125,7 +127,7 @@ class OrderDatabase {
       )
     );
 
-    console.log(`Added order "${id}" to the database`);
+    Log.info(`Added order "${id}" to the database`);
 
     return { orderId: id, products, name, email, totalPrice };
   }
@@ -134,11 +136,11 @@ class OrderDatabase {
    * @description Operation to update an order's status
    */
   public async updateOrderStatus(id: number, status: string): Promise<any> {
-    console.log(`Updating order "${id}" with status "${status}..."`);
+    Log.info(`Updating order "${id}" with status "${status}..."`);
 
     await this.callDb(this.createParams(queries.updateStatus(id, status)));
 
-    console.log(`Updated order "${id}" with status "${status}"; Ready to deliver!`);
+    Log.info(`Updated order "${id}" with status "${status}"; Ready to deliver!`);
 
     const order = await this.getOrder(id);
 
@@ -156,7 +158,7 @@ class OrderDatabase {
    * @description Operation to get an individual order
    */
   public async getOrder(id: number): Promise<any> {
-    console.log(`Getting order "${id}"..."`);
+    Log.info(`Getting order "${id}"..."`);
 
     const response = await this.callDb(this.createParams(queries.getOrder(id)));
 
@@ -167,7 +169,7 @@ class OrderDatabase {
    * @description Operation to get all test orders by test ID
    */
   public async getAllTestOrders(testId: number): Promise<any> {
-    console.log(`Getting test orders with test ID "${testId}"..."`);
+    Log.info(`Getting test orders with test ID "${testId}"..."`);
 
     const response = await this.callDb(this.createParams(queries.getAllTestOrders(testId)));
 
@@ -178,7 +180,7 @@ class OrderDatabase {
    * @description Operation to add delivery data to an order
    */
   public async addDeliveryDataToOrder(id: number, deliveryTime: string): Promise<any> {
-    console.log(`Adding delivery data to order "${id}"`);
+    Log.info(`Adding delivery data to order "${id}"`);
 
     const response = await this.callDb(
       this.createParams(queries.addDeliveryDate(id, deliveryTime))

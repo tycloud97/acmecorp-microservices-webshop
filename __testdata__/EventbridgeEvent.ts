@@ -5,7 +5,7 @@ export const eventbridgeEvent = {
   source: 'microservicesdemo.delivery',
   account: '286643423608',
   time: '2021-01-10T17:15:06Z',
-  region: 'eu-north-1',
+  region: 'us-east-1',
   resources: [],
   detail: {
     asdf: 123

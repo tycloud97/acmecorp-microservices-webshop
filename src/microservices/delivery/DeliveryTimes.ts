@@ -1,14 +1,20 @@
-import { APIGatewayProxyEvent, Context, APIGatewayProxyResult } from 'aws-lambda';
+import Log from '@dazn/lambda-powertools-logger';
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
+import { withMiddlewares } from '../../common/Tracing/middleware';
+import wrap from '@dazn/lambda-powertools-pattern-basic'
 
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;
+export const DeliveryTimes = wrap(withMiddlewares(DeliveryTimesHandler))
 
 /**
  * @description This is a canned mock of what a delivery provider might send back when you request available timeslots.
  */
-export async function DeliveryTimes(
+export async function DeliveryTimesHandler(
   event: APIGatewayProxyEvent,
   context: Context
-): Promise<APIGatewayProxyResult | void> {
+): Promise<APIGatewayProxyResult> {
+  Log.info('event', event)
+
   // Handle CORS
   if (event.httpMethod === 'OPTIONS') {
     return {

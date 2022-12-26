@@ -1,4 +1,7 @@
-import { APIGatewayProxyEvent, Context, APIGatewayProxyResult } from 'aws-lambda';
+require('source-map-support/register');
+
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import wrap from '@dazn/lambda-powertools-pattern-basic'
 
 import { makeNewOrder } from '../entities/Order';
 
@@ -6,28 +9,36 @@ import { OrderB2B, OrderB2C } from '../contracts/Order';
 import { OrderDto } from '../contracts/OrderDto';
 
 import { useCaseB2bUs } from '../usecases/useCaseB2bUs';
-import { useCaseB2cUs } from '../usecases/useCaseB2cUs';
 import { useCaseB2cMx } from '../usecases/useCaseB2cMx';
+import { useCaseB2cUs } from '../usecases/useCaseB2cUs';
+
 
 import { emitEvent } from '../../../common/EmitEvent/EmitEvent';
+import { withMiddlewares, withTracing } from '../../../common/Tracing/middleware';
 
+import Log from '@dazn/lambda-powertools-logger';
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;
+
+export const CreateOrder = wrap(withMiddlewares(CreateOrderHandler))
+
+const daznCorrelationHeaders = ['awsRequestId', 'x-correlation-id', 'call-chain-length', 'debug-log-enabled'];
 
 /**
  * @description Create an order, which is the first part of the order journey
  */
-export async function CreateOrder(
+export async function CreateOrderHandler(
   event: APIGatewayProxyEvent,
-  context: Context
-): Promise<APIGatewayProxyResult | void> {
+): Promise<APIGatewayProxyResult> {
   // Handle CORS
+  Log.info('event', event)
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
       headers: {
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Headers': `Content-Type, Authorization, ${daznCorrelationHeaders.join(', ')}`,
         'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        'access-control-allow-credentials': 'true',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
       },
       body: JSON.stringify('OK')
     } as APIGatewayProxyResult;
@@ -103,8 +114,13 @@ export async function CreateOrder(
     /**
      * Emit the data so other systems can continue processing it
      */
-    console.log('Order', order.getRequiredOrderPlacementData());
-    await emitEvent('OrderCreated', order.getRequiredOrderPlacementData());
+    Log.info('Order', order.getRequiredOrderPlacementData());
+
+
+    const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
+    const correlationId = CorrelationIds.get();
+
+    await emitEvent('OrderCreated', {...order.getRequiredOrderPlacementData(), correlationId: correlationId });
 
     /**
      * Frontend gets back an OK status code and a redirect URL so the customer is informed it's all A-OK
@@ -122,7 +138,7 @@ export async function CreateOrder(
       })
     } as APIGatewayProxyResult;
   } catch (error) {
-    console.error(error);
+    Log.error(error);
     return {
       statusCode: 400,
       headers: {
