@@ -9,9 +9,9 @@ provider:
     Usage: microservicesdemo
   tags:
     Usage: microservicesdemo
-  # tracing:
-    # apiGateway: true
-    # lambda: true
+  tracing:
+    apiGateway: true
+    lambda: true
   apiGateway:
     minimumCompressionSize: 1024
   region: ${opt:region, "us-east-1"}
@@ -29,8 +29,7 @@ provider:
   iamRoleStatements:
   - Effect: Allow
     Action:
-      - xray:PutTelemetryRecords
-      - xray:PutTraceSegments
+      - "*"
     Resource: "*"
   logs:
     restApi:

@@ -23,6 +23,7 @@ export const withTracing = (tracingEnabled: boolean) => {
 
         if (tracingEnabled) {
           AWSXRay.captureAWS(AWS);
+          AWSXRay.captureHTTPsGlobal(require('http'));
           AWSXRay.captureHTTPsGlobal(https, true);
           AWSXRay.capturePromise();
 

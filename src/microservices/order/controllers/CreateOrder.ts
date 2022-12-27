@@ -1,7 +1,7 @@
 require('source-map-support').install();
 
+import wrap from '@dazn/lambda-powertools-pattern-basic';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import wrap from '@dazn/lambda-powertools-pattern-basic'
 
 import { makeNewOrder } from '../entities/Order';
 
@@ -14,7 +14,7 @@ import { useCaseB2cUs } from '../usecases/useCaseB2cUs';
 
 
 import { emitEvent } from '../../../common/EmitEvent/EmitEvent';
-import { withMiddlewares, withTracing } from '../../../common/Tracing/middleware';
+import { withMiddlewares } from '../../../common/Tracing/middleware';
 
 import Log from '@dazn/lambda-powertools-logger';
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;

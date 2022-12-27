@@ -10,7 +10,9 @@ const CLUSTER_ARN = process.env.CLUSTER_ARN;
 if (!DATABASE_REGION || !DB_NAME || !TABLE_NAME || !SECRET_ARN || !CLUSTER_ARN)
   throw new Error('Missing required environment variables!');
 
-const client = new RDSDataClient({ region: process.env.DATABASE_REGION });
+const AWSXRay = require("aws-xray-sdk-core");
+
+const client = AWSXRay.captureAWSv3Client(new RDSDataClient({ region: process.env.DATABASE_REGION }));
 
 /**
  * @description Basic factory function to create the OrderDatabase entity/instance

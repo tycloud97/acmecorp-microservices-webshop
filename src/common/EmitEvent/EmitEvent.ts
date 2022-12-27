@@ -1,5 +1,7 @@
+import AWSXRay from 'aws-xray-sdk';
 import { EventBridgeClient, PutEventsCommand } from '@aws-sdk/client-eventbridge';
-const eventBridge = new EventBridgeClient({ region: 'us-east-1' });
+
+const eventBridge = AWSXRay.captureAWSv3Client(new EventBridgeClient({ region: 'us-east-1' }));
 
 import { events } from './events';
 
