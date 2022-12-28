@@ -13,7 +13,7 @@ if (!NODEMAILER_USER || !NODEMAILER_USER)
 import Log from '@dazn/lambda-powertools-logger';
 
 import wrap from '@dazn/lambda-powertools-pattern-basic';
-import { withMiddlewares } from '../../common/Tracing/middleware';
+import { captureException, withMiddlewares, wrapXRayAsync } from '../../common/Tracing/middleware';
 
 export const Email = wrap(withMiddlewares(EmailHandler))
 
@@ -24,27 +24,29 @@ export async function EmailHandler(
   event: APIGatewayProxyEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> {
-  Log.info('event', {event})
-  const eventBody = event.body ? JSON.parse(event.body) : event;
-  const transaction = eventBody.transaction;
+  Log.info('event1111111111', { event })
+  return await wrapXRayAsync("handler", async (subsegment) => {
+    const eventBody = event.body ? JSON.parse(event.body) : event;
+    const transaction = eventBody.transaction;
 
-  const message = createMessage(transaction, eventBody);
+    const message = createMessage(transaction, eventBody);
 
-  const mailTransport = createTransport(NODEMAILER_USER, NODEMAILER_PASS);
+    const mailTransport = createTransport(NODEMAILER_USER, NODEMAILER_PASS);
 
-  // Attempt to send the email
-  try {
-    const mail = await mailTransport.sendMail(message);
-    const previewUrl = nodemailer.getTestMessageUrl(mail);
-    return {
-      statusCode: 200,
-      body: JSON.stringify(previewUrl)
-    } as APIGatewayProxyResult;
-  } catch (error) {
-    console.error(error);
-    return {
-      statusCode: 400,
-      body: JSON.stringify(error)
-    } as APIGatewayProxyResult;
-  }
+    // Attempt to send the email
+    try {
+      const mail = await mailTransport.sendMail({});
+      const previewUrl = nodemailer.getTestMessageUrl(mail);
+      return {
+        statusCode: 200,
+        body: JSON.stringify(previewUrl)
+      } as APIGatewayProxyResult;
+    } catch (error) {
+      captureException(error);
+      return {
+        statusCode: 400,
+        body: JSON.stringify(error)
+      } as APIGatewayProxyResult;
+    }
+  });
 }

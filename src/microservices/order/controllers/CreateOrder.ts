@@ -139,7 +139,7 @@ export async function CreateOrderHandler(
       })
     } as APIGatewayProxyResult;
   } catch (error) {
-    Log.error(error);
+    reportError(error);
     return {
       statusCode: 400,
       headers: {

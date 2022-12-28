@@ -15,7 +15,7 @@ enum Statuses {
 }
 
 import wrap from '@dazn/lambda-powertools-pattern-basic';
-import { withMiddlewares } from '../../../common/Tracing/middleware';
+import { captureException, withMiddlewares } from '../../../common/Tracing/middleware';
 
 export const UpdateOrderStatus = wrap(withMiddlewares(UpdateOrderStatusHandler))
 const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
@@ -57,7 +57,7 @@ export async function UpdateOrderStatusHandler(
       body: JSON.stringify('Ping from update order status')
     } as APIGatewayProxyResult;
   } catch (error) {
-    Log.error(error);
+    captureException(error);
     return {
       statusCode: 400,
       body: JSON.stringify(error)

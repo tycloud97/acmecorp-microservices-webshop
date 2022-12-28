@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 
 import { emitEvent } from '../../common/EmitEvent/EmitEvent';
 import Log from '@dazn/lambda-powertools-logger';
-import { withMiddlewares } from '../../common/Tracing/middleware';
+import { captureException, withMiddlewares } from '../../common/Tracing/middleware';
 import wrap from '@dazn/lambda-powertools-pattern-basic'
 
 const DATABASE_API_ENDPOINT = process.env.DATABASE_API_ENDPOINT;
@@ -81,7 +81,7 @@ export async function BookDeliveryHandler(
   })
     .then((res) => res.json())
     .then((res) => res.data.getOrder)
-    .catch((error) => Log.error(error));
+    .catch((error) => captureException(error));
 
   if (!data) throw new Error('No data received!');
 
@@ -108,7 +108,7 @@ export async function BookDeliveryHandler(
         throw new Error(message);
       }
     })
-    .catch((error) => Log.error(error));
+    .catch((error) => captureException(error));
 
   // @ts-ignore
   const { customerName, customerEmail, customerPhone, customerStreet, customerCity } = data;

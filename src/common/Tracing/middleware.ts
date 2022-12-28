@@ -3,9 +3,9 @@ import https from 'https';
 import CorrelationIds from '@dazn/lambda-powertools-correlation-ids';
 import Log from '@dazn/lambda-powertools-logger';
 import middy from '@middy/core';
-import AWS from 'aws-sdk';
-import AWSXRay from 'aws-xray-sdk';
 import * as Lambda from 'aws-lambda';
+import AWS from 'aws-sdk';
+import AWSXRay, { getSegment } from 'aws-xray-sdk';
 export const withTracing = (tracingEnabled: boolean) => {
   return {
     before: (handler: middy.Request) => {
@@ -23,7 +23,6 @@ export const withTracing = (tracingEnabled: boolean) => {
 
         if (tracingEnabled) {
           AWSXRay.captureAWS(AWS);
-          AWSXRay.captureHTTPsGlobal(require('http'));
           AWSXRay.captureHTTPsGlobal(https, true);
           AWSXRay.capturePromise();
 
@@ -51,3 +50,24 @@ export const withMiddlewares = (handler: Lambda.APIGatewayProxyHandler) => {
   return middy(handler)
     .use(withTracing(true))
 };
+
+export const captureException = (err: unknown): void => {
+  Log.info("Reporttttttttttttt")
+  if (err instanceof Error) {
+    getSegment()?.addError(err);
+  } else {
+    getSegment()?.addError(JSON.stringify(err));
+  }
+}
+
+export async function wrapXRayAsync<T>(segmentName: string, f: (subsegment: AWSXRay.Subsegment | undefined) => T): Promise<T> {
+  return AWSXRay.captureAsyncFunc(segmentName, async (subsegment) => {
+    try {
+      return f(subsegment);
+    } finally {
+      if (subsegment) {
+        subsegment.close();
+      }
+    }
+  });
+}
