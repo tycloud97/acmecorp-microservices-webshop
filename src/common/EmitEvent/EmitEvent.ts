@@ -2,6 +2,7 @@ import AWSXRay from 'aws-xray-sdk';
 import { EventBridgeClient, PutEventsCommand } from '@aws-sdk/client-eventbridge';
 
 const eventBridge = AWSXRay.captureAWSv3Client(new EventBridgeClient({ region: 'us-east-1' }));
+import Log from '@dazn/lambda-powertools-logger';
 
 import { events } from './events';
 
@@ -13,6 +14,7 @@ import { events } from './events';
  */
 export async function emitEvent(eventName: string, data: Record<string, unknown>) {
   try {
+    Log.info('emitEvent', {data})
     const command = events[eventName](data);
     const event = new PutEventsCommand({ Entries: [command] });
     if (!event) throw new Error('No such event name!');

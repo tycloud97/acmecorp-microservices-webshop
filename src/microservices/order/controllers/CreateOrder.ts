@@ -30,7 +30,7 @@ export async function CreateOrderHandler(
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> {
   // Handle CORS
-  Log.info('event', event)
+  Log.info('event', {event})
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,

@@ -22,7 +22,7 @@ export async function BookDeliveryHandler(
   context: Context
 ): Promise<APIGatewayProxyResult> {
   // Handle CORS
-  Log.info('event', event)
+  Log.info('event', {event})
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
@@ -112,6 +112,7 @@ export async function BookDeliveryHandler(
 
   // @ts-ignore
   const { customerName, customerEmail, customerPhone, customerStreet, customerCity } = data;
+  Log.info("Prepare to push", {data})
 
   /**
    * Create a booking object
@@ -129,7 +130,7 @@ export async function BookDeliveryHandler(
   /**
    * Emit event so our other services can use the information
    */
-  await emitEvent('DeliveryBooked', { booking, correlationId: correlationId?.['x-correlation-id'] });
+  await emitEvent('DeliveryBooked', { ...booking, correlationId: correlationId?.['x-correlation-id'] });
 
   return {
     statusCode: 200,

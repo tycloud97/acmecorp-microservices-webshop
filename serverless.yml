@@ -139,7 +139,8 @@ functions:
         inputTransformer:
           inputPathsMap:
             orderId: '$.detail.orderId'
-          inputTemplate: '{"orderId": <orderId>, "transaction": "StockCreated"}'
+            detail: "$.detail"
+          inputTemplate: '{"orderId": <orderId>, "transaction": "StockCreated", "detail": <detail>, "detail-type": "1", "source": "1"}'
     - eventBridge:
         eventBus: ${self:custom.aws.arns.customEventbridgeBus}
         pattern:
@@ -150,7 +151,8 @@ functions:
         inputTransformer:
           inputPathsMap:
             orderId: '$.detail.orderId'
-          inputTemplate: '{"orderId": <orderId>, "transaction": "DeliveryBooked"}'
+            detail: "$.detail"
+          inputTemplate: '{"orderId": <orderId>, "transaction": "DeliveryBooked", "detail": <detail>, "detail-type": "1", "source": "1"}'
     environment:
       DATABASE_API_ENDPOINT: ${self:custom.aws.database.databaseApiEndpoint}
 
@@ -189,7 +191,8 @@ functions:
             phone: '$.detail.phone'
             street: '$.detail.street'
             city: '$.detail.city'
-          inputTemplate: '{"orderId": <orderId>, "name": <name>, "email": <email>, "phone": <phone>, "street": <street>, "city": <city>, "deliveryTime": "1614621600"}'
+            detail: "$.detail"
+          inputTemplate: '{"orderId": <orderId>, "name": <name>, "email": <email>, "phone": <phone>, "street": <street>, "city": <city>, "deliveryTime": "1614621600", "detail": <detail>, "detail-type": "1", "source": "1"}'
     environment:
       DATABASE_API_ENDPOINT: ${self:custom.aws.database.databaseApiEndpoint}
       ALLOWED_ORIGIN: ${self:custom.allowedOrigin}
@@ -223,7 +226,8 @@ functions:
             orderId: '$.detail.orderId'
             name: '$.detail.name'
             email: '$.detail.email'
-          inputTemplate: '{"transaction": "OrderCreated", "orderId": <orderId>, "name": <name>, "email": <email>}'
+            detail: "$.detail"
+          inputTemplate: '{"transaction": "OrderCreated", "orderId": <orderId>, "name": <name>, "email": <email>, "detail": <detail>, "detail-type": "1", "source": "1"}'
     - eventBridge:
         eventBus: ${self:custom.aws.arns.customEventbridgeBus}
         pattern:
@@ -236,7 +240,8 @@ functions:
             orderId: '$.detail.orderId'
             name: '$.detail.name'
             email: '$.detail.email'
-          inputTemplate: '{"transaction": "OrderDeliverable", "orderId": <orderId>, "name": <name>, "email": <email>}'
+            detail: "$.detail"
+          inputTemplate: '{"transaction": "OrderDeliverable", "orderId": <orderId>, "name": <name>, "email": <email>, "detail": <detail>, "detail-type": "1", "source": "1"}'
     - eventBridge:
         eventBus: ${self:custom.aws.arns.customEventbridgeBus}
         pattern:
@@ -253,7 +258,8 @@ functions:
             street: '$.detail.street'
             city: '$.detail.city'
             deliveryTime: '$.detail.deliveryTime'
-          inputTemplate: '{"transaction": "DeliveryBooked", "orderId": <orderId>, "name": <name>, "email": <email>, "phone": <phone>, "street": <street>, "city": <city>, "time": <deliveryTime>}'
+            detail: "$.detail"
+          inputTemplate: '{"transaction": "DeliveryBooked", "orderId": <orderId>, "name": <name>, "email": <email>, "phone": <phone>, "street": <street>, "city": <city>, "time": <deliveryTime>, "detail": <detail>, "detail-type": "1", "source": "1"}'
     environment:
       DELIVERY_URL_BASE: ${self:custom.appDeliveryPage}
       NODEMAILER_USER: ${self:custom.nodemailer.user}
@@ -319,7 +325,8 @@ functions:
         inputTransformer:
           inputPathsMap:
             orderId: '$.detail.orderId'
-          inputTemplate: '{"orderId": <orderId>}'
+            detail: "$.detail"
+          inputTemplate: '{"orderId": <orderId>, "detail": <detail>, "detail-type": "1", "source": "1"}'
     iamRoleStatements:
     - Effect: Allow
       Action:

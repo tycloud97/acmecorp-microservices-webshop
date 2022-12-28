@@ -22,7 +22,7 @@ export async function PlaceOrderHandler(
   context: Context
 ): Promise<APIGatewayProxyResult> {
   try {
-    Log.info('event', event);
+    Log.info('event', {event});
 
     const eventBody = event.body ? JSON.parse(event.body) : event;
     Log.info('eventBody', eventBody);

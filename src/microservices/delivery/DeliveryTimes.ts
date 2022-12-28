@@ -15,7 +15,7 @@ export async function DeliveryTimesHandler(
   event: APIGatewayProxyEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> {
-  Log.info('event', event)
+  Log.info('event', {event})
 
   // Handle CORS
   if (event.httpMethod === 'OPTIONS') {

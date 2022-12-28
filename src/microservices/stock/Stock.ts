@@ -16,7 +16,7 @@ export async function StockHandler(
   event: APIGatewayProxyEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> {
-  Log.info('event', event)
+  Log.info('event', {event})
   const eventBody = event.body ? JSON.parse(event.body) : event;
   const { orderId } = eventBody;
 
