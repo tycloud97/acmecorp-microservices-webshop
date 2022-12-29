@@ -71,10 +71,10 @@ export async function EmailHandler(
     } as APIGatewayProxyResult;
   } catch (error) {
     Log.error(error)
-    subsegment.addError(error);
-    // reportError(error)
-    xray(error);
-    Log.info("1111111111111")
+    // subsegment.addError(error);
+    reportError(error)
+    // xray(error);
+    // Log.info("1111111111111")
     return {
       statusCode: 400,
       body: JSON.stringify(error)

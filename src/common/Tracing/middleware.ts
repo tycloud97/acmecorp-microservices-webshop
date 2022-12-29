@@ -58,10 +58,10 @@ export const reportError = (error: Error): void => {
   const segment = AWSXRay.getSegment();
 
   try {
-    segment.addNewSubsegment("Error").addError(error, true);
-    segment.addAnnotation("error", "reportError");
-    segment.addMetadata("error", JSON.stringify(error, Object.getOwnPropertyNames(error)));
-    segment.close()
+    let subsegment = segment.addNewSubsegment("Error");
+    subsegment.addError(error, true)
+    subsegment.close();
+   
   } catch (error) {
     Log.error('error', error);
   }
