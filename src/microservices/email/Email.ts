@@ -13,7 +13,7 @@ if (!NODEMAILER_USER || !NODEMAILER_USER)
 
 import wrap from '@dazn/lambda-powertools-pattern-basic';
 import AWSXRay from 'aws-xray-sdk';
-import { withMiddlewares } from '../../common/Tracing/middleware';
+import { reportError, withMiddlewares } from '../../common/Tracing/middleware';
 import { createMessage } from './frameworks/messages';
 
 export const Email = wrap(withMiddlewares(EmailHandler))
