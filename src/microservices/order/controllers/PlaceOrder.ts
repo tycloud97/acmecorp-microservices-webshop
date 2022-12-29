@@ -8,7 +8,7 @@ const ENDPOINT = process.env.DATABASE_API_ENDPOINT;
 
 import Log from '@dazn/lambda-powertools-logger';
 import wrap from '@dazn/lambda-powertools-pattern-basic';
-import { captureException, withMiddlewares } from '../../../common/Tracing/middleware';
+import { reportError, withMiddlewares } from '../../../common/Tracing/middleware';
 const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
 
 export const PlaceOrder = wrap(withMiddlewares(PlaceOrderHandler))
@@ -71,7 +71,7 @@ export async function PlaceOrderHandler(
       body: JSON.stringify('SUCCESS')
     } as APIGatewayProxyResult;
   } catch (error) {
-    captureException(error);
+    reportError(error);
     return {
       statusCode: 400,
       body: JSON.stringify(error)

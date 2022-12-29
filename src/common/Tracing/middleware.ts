@@ -1,11 +1,11 @@
 import https from 'https';
-
+import http from "http";
 import CorrelationIds from '@dazn/lambda-powertools-correlation-ids';
 import Log from '@dazn/lambda-powertools-logger';
 import middy from '@middy/core';
 import * as Lambda from 'aws-lambda';
 import AWS from 'aws-sdk';
-import AWSXRay, { getSegment } from 'aws-xray-sdk';
+import AWSXRay, { Subsegment } from 'aws-xray-sdk';
 export const withTracing = (tracingEnabled: boolean) => {
   return {
     before: (handler: middy.Request) => {
@@ -23,6 +23,7 @@ export const withTracing = (tracingEnabled: boolean) => {
 
         if (tracingEnabled) {
           AWSXRay.captureAWS(AWS);
+          AWSXRay.captureHTTPsGlobal(http, true);
           AWSXRay.captureHTTPsGlobal(https, true);
           AWSXRay.capturePromise();
 
@@ -51,23 +52,29 @@ export const withMiddlewares = (handler: Lambda.APIGatewayProxyHandler) => {
     .use(withTracing(true))
 };
 
-export const captureException = (err: unknown): void => {
-  Log.info("Reporttttttttttttt")
-  if (err instanceof Error) {
-    getSegment()?.addError(err);
-  } else {
-    getSegment()?.addError(JSON.stringify(err));
-  }
-}
 
-export async function wrapXRayAsync<T>(segmentName: string, f: (subsegment: AWSXRay.Subsegment | undefined) => T): Promise<T> {
-  return AWSXRay.captureAsyncFunc(segmentName, async (subsegment) => {
-    try {
-      return f(subsegment);
-    } finally {
-      if (subsegment) {
-        subsegment.close();
-      }
-    }
-  });
-}
+export const reportError = (error: Error): void => {
+  Log.error('reportError', error)
+  const segment = AWSXRay.getSegment();
+
+  try {
+    segment.addNewSubsegment("Error").addError(error, true);
+    segment.addAnnotation("error", "reportError");
+    segment.addMetadata("error", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    segment.close()
+  } catch (error) {
+    Log.error('error', error);
+  }
+};
+
+// export async function wrapXRayAsync<T>(segmentName: string, f: (subsegment: AWSXRay.Subsegment | undefined) => T): Promise<T> {
+//   return AWSXRay.captureAsyncFunc(segmentName, async (subsegment) => {
+//     try {
+//       return f(subsegment);
+//     } finally {
+//       if (subsegment) {
+//         subsegment.close();
+//       }
+//     }
+//   });
+// }

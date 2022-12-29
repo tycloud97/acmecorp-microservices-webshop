@@ -5,7 +5,7 @@ const eventBridge = AWSXRay.captureAWSv3Client(new EventBridgeClient({ region: '
 import Log from '@dazn/lambda-powertools-logger';
 
 import { events } from './events';
-import { captureException } from '../Tracing/middleware';
+import { reportError } from '../Tracing/middleware';
 
 /**
  * @description Utility to emit events with AWS EventBridge library
@@ -22,7 +22,7 @@ export async function emitEvent(eventName: string, data: Record<string, unknown>
 
     return await eventBridge.send(event);
   } catch (error) {
-    captureException(error)
+    reportError(error)
     Log.error('Failed to emit event!\n', error);
   }
 }

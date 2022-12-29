@@ -74,7 +74,7 @@ plugins:
 
 
 package:
-  individually: false
+  individually: true
   exclude:
     - node_modules/aws-sdk/**
     - node_modules/aws-lambda/**
