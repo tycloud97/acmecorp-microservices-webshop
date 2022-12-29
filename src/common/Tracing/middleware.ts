@@ -67,14 +67,14 @@ export const reportError = (error: Error): void => {
   }
 };
 
-// export async function wrapXRayAsync<T>(segmentName: string, f: (subsegment: AWSXRay.Subsegment | undefined) => T): Promise<T> {
-//   return AWSXRay.captureAsyncFunc(segmentName, async (subsegment) => {
-//     try {
-//       return f(subsegment);
-//     } finally {
-//       if (subsegment) {
-//         subsegment.close();
-//       }
-//     }
-//   });
-// }
+export async function wrapXRayAsync<T>(segmentName: string, f: (subsegment: AWSXRay.Subsegment | undefined) => T): Promise<T> {
+  return AWSXRay.captureAsyncFunc(segmentName, async (subsegment) => {
+    try {
+      return f(subsegment);
+    } finally {
+      if (subsegment) {
+        subsegment.close();
+      }
+    }
+  });
+}

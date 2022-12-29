@@ -24,9 +24,21 @@ const request = async () => {
   const segment = AWSXRay.getSegment();  //returns the facade segment
   const subsegment = segment.addNewSubsegment('subseg');
   await delay(5000);
+  await request2(subsegment)
+  subsegment.close();
+}
+
+const request2 = async (sm) => {
+  Log.info("request ne")
+  // const segment = AWSXRay.getSegment();  //returns the facade segment
+  const subsegment = sm.addNewSubsegment('subseg22');
+  await delay(1000);
+
 
   subsegment.close();
 }
+
+
 
 /**
  * @description Send email with Ethereal mail service
