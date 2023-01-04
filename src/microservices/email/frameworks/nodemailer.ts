@@ -1,17 +1,14 @@
 import nodemailer from 'nodemailer';
+let AWS = require('aws-sdk');
 
 /**
  * @description Helper for creating Nodemailer transport
  */
 export const createTransport = (nodemailerUser: string, nodemailerPass: string) =>
   nodemailer.createTransport({
-    host: `smtp.ethereal.email`,
-    port: 587,
-    secure: false,
-    auth: {
-      user: nodemailerUser,
-      pass: nodemailerPass
-    }
+    SES: new AWS.SES({
+      apiVersion: '2010-12-01'
+    })
   });
 
 /**
@@ -25,7 +22,7 @@ export const createNodemailerData = (
   html: string
 ) => {
   const senderName = 'ACME Corp. Potted Plants';
-  const senderEmail = 'orders@acmecorp.xyz';
+  const senderEmail = 'typrone1@gmail.com';
 
   return {
     from: `${senderName} <${senderEmail}>`,

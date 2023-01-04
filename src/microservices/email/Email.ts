@@ -50,7 +50,7 @@ export async function EmailHandler(
   Log.info('event1111111111', { event })
   const subsegment = AWSXRay.getSegment();
 
-  Log.info('subsegment', {subsegment})
+  Log.info('subsegment', { subsegment })
 
   const eventBody = event.body ? JSON.parse(event.body) : event;
   const transaction = eventBody.transaction;
@@ -63,7 +63,10 @@ export async function EmailHandler(
   // Attempt to send the email
   Log.info("222222222222")
   try {
-    const mail = await mailTransport.sendMail({});
+    generateResultRandomly()
+    await runOperations(5);
+
+    const mail = await mailTransport.sendMail(message);
     const previewUrl = nodemailer.getTestMessageUrl(mail);
     return {
       statusCode: 200,
@@ -73,7 +76,7 @@ export async function EmailHandler(
     Log.error(error)
     // subsegment.addError(error);
     reportError(error)
-    // xray(error);
+    xray(error);
     // Log.info("1111111111111")
     return {
       statusCode: 400,
@@ -88,4 +91,41 @@ function xray(error: Error) {
   let subsegment = AWSXRay.getSegment().addNewSubsegment("Downstream Service Call Failure");
   subsegment.addError(error);
   subsegment.close();
+}
+
+async function runOperations(n) {
+  AWSXRay.captureAsyncFunc('send', function (subsegment) {
+    console.log(`Running ${n} operations sequentially...`)
+
+
+    for (let i = 0; i < n; ++i) {
+      AWSXRay.captureAsyncFunc(`my-subsegment-${i}`, (subsegment) => {
+        telemetry(1000, i);
+        subsegment.close()
+      }, subsegment);
+    }
+
+
+    console.log("Done!")
+  })
+
+
+}
+
+async function telemetry(ms, i) {
+  console.log(`Task ${i} - Sleep for ${ms} ms ...`);
+  await sleep(ms);
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+var win_percentage = 10;
+
+
+function generateResultRandomly() {
+  var random = Math.floor(Math.random() * 101); // returns a random integer from 0 to 100
+  if (random <= win_percentage) {
+    throw new Error('Chúc mừng bạn đã rơi vào 10% lỗi @@')
+  }
 }

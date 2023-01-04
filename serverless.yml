@@ -39,7 +39,7 @@ provider:
 
 custom:
   allowedOrigin: "*" # Ideally don't use this; scope down to your actual domain
-  appDeliveryPage: https://mydomain.com/delivery.html?order=
+  appDeliveryPage: http://csc-demo-tracing.s3-website-us-east-1.amazonaws.com/delivery.html?order=
   aws:
     awsAccountId: 827539266883
     awsRandomDomain: 0zfhtxcuu2 # Get this after first deployment
@@ -54,8 +54,8 @@ custom:
       auroraSecretValue: arn:aws:secretsmanager:us-east-1:827539266883:secret:microservicesdemo1-XlticR
       customEventbridgeBus: arn:aws:events:${self:provider.region}:${self:custom.aws.awsAccountId}:event-bus/${self:custom.aws.database.databaseName}
   nodemailer: # Pre-create these at https://ethereal.email/create
-    user: abdullah74@ethereal.email
-    password: K1YfZtu4vFjYUe1VQh
+    user: AKIA4BLJPDVBYZHOS75A
+    password: BKUC041H7o9H9tJ/NgTevfdSCj2qwtRmW5QWV7lFoqZt
   # webpack:
   #   webpackConfig: 'webpack.config.js'
   #   includeModules: true
