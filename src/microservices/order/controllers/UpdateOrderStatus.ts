@@ -17,7 +17,7 @@ enum Statuses {
 import wrap from '@dazn/lambda-powertools-pattern-basic';
 import { reportError, withMiddlewares } from '../../../common/Tracing/middleware';
 
-export const UpdateOrderStatus = wrap(withMiddlewares(UpdateOrderStatusHandler))
+export const UpdateOrderStatus = (withMiddlewares(UpdateOrderStatusHandler))
 const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
 
 /**

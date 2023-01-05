@@ -12,7 +12,7 @@ const DATABASE_API_ENDPOINT = process.env.DATABASE_API_ENDPOINT;
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;
 const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
 
-export const BookDelivery = wrap(withMiddlewares(BookDeliveryHandler))
+export const BookDelivery = (withMiddlewares(BookDeliveryHandler))
 
 /**
  * @description This is a canned mock of what a delivery provider might send back when you request to book a delivery timeslot.

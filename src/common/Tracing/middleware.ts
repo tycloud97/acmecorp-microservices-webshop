@@ -1,11 +1,13 @@
-import https from 'https';
-import http from "http";
 import CorrelationIds from '@dazn/lambda-powertools-correlation-ids';
 import Log from '@dazn/lambda-powertools-logger';
 import middy from '@middy/core';
 import * as Lambda from 'aws-lambda';
 import AWS from 'aws-sdk';
-import AWSXRay, { Subsegment } from 'aws-xray-sdk';
+import AWSXRay from 'aws-xray-sdk';
+import http from "http";
+import https from 'https';
+import wrap from '@dazn/lambda-powertools-pattern-basic';
+
 export const withTracing = (tracingEnabled: boolean) => {
   return {
     before: (handler: middy.Request) => {
@@ -47,23 +49,29 @@ export const withTracing = (tracingEnabled: boolean) => {
   };
 };
 
+
 export const withMiddlewares = (handler: Lambda.APIGatewayProxyHandler) => {
-  return middy(handler)
-    .use(withTracing(true))
+  const IS_TRACING_ENABLED = false
+  if (IS_TRACING_ENABLED) {
+    return handler;
+  } else {
+    return wrap(middy(handler)
+      .use(withTracing(true)))
+  }
 };
 
 
 export const reportError = (error: Error): void => {
-  Log.error('reportError', error)
+  Log.error('error', error)
   const segment = AWSXRay.getSegment();
 
   try {
     let subsegment = segment.addNewSubsegment("Error");
     subsegment.addError(error, true)
     subsegment.close();
-   
+
   } catch (error) {
-    Log.error('error', error);
+    Log.error('reportError', error);
   }
 };
 

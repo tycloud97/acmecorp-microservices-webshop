@@ -6,7 +6,7 @@ import { emitEvent } from '../../common/EmitEvent/EmitEvent';
 import wrap from '@dazn/lambda-powertools-pattern-basic'
 import Log from '@dazn/lambda-powertools-logger';
 
-export const Stock = wrap(withMiddlewares(StockHandler))
+export const Stock = (withMiddlewares(StockHandler))
 
 import { withMiddlewares } from '../../common/Tracing/middleware';
 /**

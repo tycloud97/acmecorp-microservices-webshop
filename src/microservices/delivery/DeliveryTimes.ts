@@ -6,7 +6,7 @@ import { withMiddlewares } from '../../common/Tracing/middleware';
 import wrap from '@dazn/lambda-powertools-pattern-basic'
 
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;
-export const DeliveryTimes = wrap(withMiddlewares(DeliveryTimesHandler))
+export const DeliveryTimes = (withMiddlewares(DeliveryTimesHandler))
 
 /**
  * @description This is a canned mock of what a delivery provider might send back when you request available timeslots.

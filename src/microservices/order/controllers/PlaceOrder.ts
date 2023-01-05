@@ -11,7 +11,7 @@ import wrap from '@dazn/lambda-powertools-pattern-basic';
 import { reportError, withMiddlewares } from '../../../common/Tracing/middleware';
 const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
 
-export const PlaceOrder = wrap(withMiddlewares(PlaceOrderHandler))
+export const PlaceOrder = (withMiddlewares(PlaceOrderHandler))
 
 /**
  * @description Placing the order is done after any payment processing is complete.

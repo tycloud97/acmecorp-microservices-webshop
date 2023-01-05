@@ -405,3 +405,6 @@ aws logs put-subscription-filter --destination-arn arn:aws:logs:us-east-1:827539
 aws logs put-subscription-filter --destination-arn arn:aws:logs:us-east-1:827539266883:destination:CL-Destination-f438f910-6bdc-4563-a652-5c1d9e4de97b --log-group-name /aws/lambda/acmecorp-webshop-dev-finance --filter-name test --filter-pattern '' --region us-east-1
 
 aws logs put-subscription-filter --destination-arn arn:aws:logs:us-east-1:827539266883:destination:CL-Destination-f438f910-6bdc-4563-a652-5c1d9e4de97b --log-group-name /aws/lambda/acmecorp-webshop-dev-stock --filter-name test --filter-pattern '' --region us-east-1
+
+use microservicesdemo;
+select * from microservicesdemo.Orders

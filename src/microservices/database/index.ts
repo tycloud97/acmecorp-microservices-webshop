@@ -7,4 +7,4 @@ import { typeDefs } from './frameworks/typeDefs';
 import wrap from '@dazn/lambda-powertools-pattern-basic';
 import { withMiddlewares } from '../../common/Tracing/middleware';
 
-export const server = wrap(withMiddlewares(new ApolloServer({ resolvers, typeDefs }).createHandler()));
+export const server = (withMiddlewares(new ApolloServer({ resolvers, typeDefs }).createHandler()));

@@ -19,7 +19,7 @@ import { withMiddlewares } from '../../../common/Tracing/middleware';
 import Log from '@dazn/lambda-powertools-logger';
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN;
 
-export const CreateOrder = wrap(withMiddlewares(CreateOrderHandler))
+export const CreateOrder = (withMiddlewares(CreateOrderHandler))
 
 const daznCorrelationHeaders = ['awsRequestId', 'x-correlation-id', 'call-chain-length', 'debug-log-enabled'];
 
