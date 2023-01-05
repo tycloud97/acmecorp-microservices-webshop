@@ -124,24 +124,11 @@ Nếu mọi người đang expect X-Ray hiển thị ra thác nước thì khôn
 Mục đích mình truyền anotation ở mỗi lần gọi nó sẽ dễ nhận biết nếu nó không nằm chung một trace thì vẫn tìm ra được chứ không phải.
 Do X-RAY group các tiến trình cùng lần gọi lại với nhau nên rất khó để mọi người đọc từ A->Z
 
-[18:17] Ty. Nguyen Huu - CMC Global CSC
 Dự án thực tế
-
-
-[18:17] Ty. Nguyen Huu - CMC Global CSC
-Dự án thực tế
-
-[18:17] Ty. Nguyen Huu - CMC Global CSC
 Ví dụ ngân hàng
-
-[18:58] Ty. Nguyen Huu - CMC Global CSC
 Là giải pháp manage
-
-[18:58] Ty. Nguyen Huu - CMC Global CSC
-Là giải pháp manage
-
 Nhớ để log đúng vô?
-
+Chi phí?
 Đối với Minolith thì dễ
 Thử với trường hợp thành công để xem nó từ A-Z?
 
