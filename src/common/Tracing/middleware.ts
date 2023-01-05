@@ -7,6 +7,7 @@ import AWSXRay from 'aws-xray-sdk';
 import http from "http";
 import https from 'https';
 import wrap from '@dazn/lambda-powertools-pattern-basic';
+import { SSM } from "aws-sdk";
 
 export const withTracing = (tracingEnabled: boolean) => {
   return {
@@ -51,12 +52,14 @@ export const withTracing = (tracingEnabled: boolean) => {
 
 
 export const withMiddlewares = (handler: Lambda.APIGatewayProxyHandler) => {
-  const IS_TRACING_ENABLED = false
-  if (IS_TRACING_ENABLED) {
-    return handler;
-  } else {
+  
+  const isTracingEnabled = true
+  Log.info('isTracingEnabled', { isTracingEnabled })
+  if (isTracingEnabled) {
     return wrap(middy(handler)
       .use(withTracing(true)))
+  } else {
+    return handler;
   }
 };
 
@@ -85,4 +88,16 @@ export async function wrapXRayAsync<T>(segmentName: string, f: (subsegment: AWSX
       }
     }
   });
+}
+
+const getParameterWorker = async (name: string, decrypt: boolean): Promise<string> => {
+  const ssm = new SSM();
+  const result = await ssm
+    .getParameter({ Name: name, WithDecryption: decrypt })
+    .promise();
+  return result.Parameter.Value;
+}
+
+export const getParameter = async (name: string): Promise<string> => {
+  return getParameterWorker(name, false);
 }

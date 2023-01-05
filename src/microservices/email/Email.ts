@@ -51,7 +51,9 @@ export async function EmailHandler(
   const message = createMessage(transaction, eventBody);
 
   const mailTransport = createTransport(NODEMAILER_USER, NODEMAILER_PASS);
+
   await doTaskSixSeconds();
+
   // Attempt to send the email
   try {
     const mail = await mailTransport.sendMail(message);
