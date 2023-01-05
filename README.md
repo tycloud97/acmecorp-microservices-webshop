@@ -408,3 +408,5 @@ aws logs put-subscription-filter --destination-arn arn:aws:logs:us-east-1:827539
 
 use microservicesdemo;
 select * from microservicesdemo.Orders
+
+SELECT TIMESTAMP, "sLevel", "@log_group", "@message" FROM "clw"."loggingcsc_test_firehose" WHERE "@message" LIKE '%10946165-2334-4772-844f-aca04b819b9d%' order BY TIMESTAMP
