@@ -110,8 +110,6 @@ Mục đích:
 
 - No-code và low code
 
-
-
 Khái niệm X-RAY, rất tiện dung.
 
 Use case:
@@ -137,6 +135,7 @@ Use case:
 - Mở rộng hơn 1 chút?
 
 # Trước khi vào demo, mời anh Hoàng show code và giải thích sơ bộ về thay đổi
+- Lượn một vòng ứng dụng
 
 - Deploy version có tracing bằng cách update code
 
